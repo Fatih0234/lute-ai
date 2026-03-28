@@ -60,6 +60,7 @@ from lute.settings.routes import bp as settings_bp
 from lute.themes.routes import bp as themes_bp
 from lute.stats.routes import bp as stats_bp
 from lute.cli.commands import bp as cli_bp
+from lute.ai_explain.routes import bp as ai_explain_bp
 
 
 def _setup_app_dir(dirname, readme_content):
@@ -345,6 +346,7 @@ def _create_app(app_config, extra_config):
     app.register_blueprint(themes_bp)
     app.register_blueprint(stats_bp)
     app.register_blueprint(cli_bp)
+    app.register_blueprint(ai_explain_bp)
     if app_config.is_test_db:
         app.register_blueprint(dev_api_bp)
 
@@ -376,6 +378,22 @@ def _init_parser_plugins(plugin_data_path, outfunc):
     outfunc("Enabled parsers:")
     for _, v in supported_parsers():
         outfunc(f"  * {v.name()}")
+
+
+def _check_ai_config(outfunc):
+    """Check AI explanation configuration and log status."""
+    try:
+        from lute.ai_explain.config import get_config
+        
+        config = get_config()
+        if config.is_configured():
+            outfunc("AI explanation service: Enabled")
+            outfunc(f"  * Provider: MiniMax ({config.model_name})")
+        else:
+            outfunc("AI explanation service: Not configured")
+            outfunc("  * Set ANTHROPIC_API_KEY environment variable to enable")
+    except Exception as e:
+        outfunc(f"AI explanation service: Error checking configuration: {e}")
 
 
 def create_app(
@@ -413,6 +431,9 @@ def create_app(
 
     # Plugins are loaded after the app, as they may use settings etc.
     _init_parser_plugins(app_config.plugin_datapath, outfunc)
+    
+    # Check AI configuration and log status
+    _check_ai_config(outfunc)
 
     return app
 

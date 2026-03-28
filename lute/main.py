@@ -7,12 +7,16 @@ e.g.
 
 python -m lute.main --port 5001
 """
+
 import errno
 import os
 import argparse
 import shutil
 import logging
 import textwrap
+from dotenv import load_dotenv
+
+load_dotenv()
 from waitress import serve
 from lute import __version__
 from lute.app_factory import create_app, data_initialization

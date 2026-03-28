@@ -36,6 +36,7 @@ def _render_book_page(book, pagenum, track_page_open=True):
         page_count=book.page_count,
         show_highlights=show_highlights,
         lang_id=lang.id,
+        lang_name=lang.name,
         track_page_open=track_page_open,
         term_dicts=term_dicts,
     )

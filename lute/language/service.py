@@ -111,6 +111,14 @@ class Service:
         "Get a lang def and its stories."
         ret = [ld for ld in self.lang_defs_cache if ld.language_name == lang_name]
         if len(ret) == 0:
+            # Provide helpful error message if language_defs directory is empty/uninitialized
+            if len(self.lang_defs_cache) == 0:
+                raise RuntimeError(
+                    f"Missing language def name '{lang_name}'. "
+                    "The language_defs directory appears to be empty. "
+                    "This is likely because the Git submodule was not initialized. "
+                    "Run: git submodule update --init --recursive"
+                )
             raise RuntimeError(f"Missing language def name {lang_name}")
         return ret[0]
 

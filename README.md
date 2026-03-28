@@ -21,6 +21,22 @@ See the [Lute v3 manual](https://luteorg.github.io/lute-manual/).  Hop onto the 
 
 ## Developing
 
+### Quick Start
+
+1. Clone the repository with submodules:
+   ```bash
+   git clone --recurse-submodules https://github.com/jzohrab/lute-v3.git
+   ```
+   
+   Or if you've already cloned without submodules:
+   ```bash
+   git submodule update --init --recursive
+   ```
+   
+   **Note:** The `lute/db/language_defs` directory is a Git submodule that contains predefined language definitions. Without initializing it, the application will fail to start with a "Missing language def" error.
+
+2. Set up your development environment and install dependencies.
+
 For more information on building and developing, please see [Development](../../wiki/Development).
 
 ## Contributing

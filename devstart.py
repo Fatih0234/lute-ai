@@ -19,8 +19,12 @@ python `pwd`/devstart.py
 """
 
 import os
+import sys
 import argparse
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 from lute import __version__
 from lute.app_factory import create_app, data_initialization
 from lute.config.app_config import AppConfig
@@ -30,10 +34,53 @@ log = logging.getLogger("werkzeug")
 log.setLevel(logging.ERROR)
 
 
+def _check_language_defs():
+    """
+    Check if language_defs submodule is initialized.
+    Exits with helpful message if not.
+    """
+    thisdir = os.path.dirname(os.path.realpath(__file__))
+    langdefs_dir = os.path.join(thisdir, "lute", "db", "language_defs")
+    
+    # Check if directory exists and has any definition.yaml files
+    if not os.path.exists(langdefs_dir):
+        print("\n" + "=" * 70)
+        print("ERROR: language_defs directory is missing!")
+        print("=" * 70)
+        print("\nThe language_defs submodule has not been initialized.")
+        print("\nPlease run:")
+        print("  git submodule update --init --recursive")
+        print("\nOr use the setup task:")
+        print("  invoke setup")
+        print("=" * 70 + "\n")
+        sys.exit(1)
+    
+    # Check if directory is empty (submodule not initialized)
+    has_defs = any(
+        os.path.exists(os.path.join(langdefs_dir, d, "definition.yaml"))
+        for d in os.listdir(langdefs_dir)
+        if os.path.isdir(os.path.join(langdefs_dir, d)) and not d.startswith(".")
+    )
+    
+    if not has_defs:
+        print("\n" + "=" * 70)
+        print("ERROR: language_defs directory is empty!")
+        print("=" * 70)
+        print("\nThe language_defs submodule has not been initialized.")
+        print("\nPlease run:")
+        print("  git submodule update --init --recursive")
+        print("\nOr use the setup task:")
+        print("  invoke setup")
+        print("=" * 70 + "\n")
+        sys.exit(1)
+
+
 def start(port):
     """
     Start the dev server with reloads on port.
     """
+    # Check submodules early to provide helpful error message
+    _check_language_defs()
 
     def dev_print(s):
         "Print info on first load only."

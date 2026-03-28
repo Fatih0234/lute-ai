@@ -107,6 +107,8 @@ def add_default_user_settings(session, default_user_backup_path):
         # Anki:
         "use_ankiconnect": False,
         "ankiconnect_url": "http://127.0.0.1:8765",
+        # AI Explanations:
+        "ai_explanation_use_target_language": True,
     }
     add_initial_vals_if_needed(keys_and_defaults)
 

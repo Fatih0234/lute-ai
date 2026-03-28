@@ -54,6 +54,29 @@ def todos(c):
     c.run("python utils/todos.py")
 
 
+@task
+def setup(c):
+    """
+    Initialize the development environment.
+    
+    This task ensures that Git submodules (including language_defs) are properly initialized.
+    Run this after cloning the repository for the first time.
+    """
+    print("Initializing Git submodules...")
+    result = c.run("git submodule update --init --recursive", warn=True)
+    if result.ok:
+        print("✓ Submodules initialized successfully")
+        print("✓ Language definitions are ready")
+        print("\nNext steps:")
+        print("  1. Set up your virtual environment (if not already done)")
+        print("  2. Install dependencies: pip install -e .[dev]")
+        print("  3. Start the dev server: invoke start")
+    else:
+        print("✗ Failed to initialize submodules")
+        print("  You may need to manually run: git submodule update --init --recursive")
+        sys.exit(1)
+
+
 @task(help={"port": "optional port to run on; default = 5001"})
 def start(c, port=5001):
     """
@@ -323,6 +346,7 @@ def full(c):  # pylint: disable=unused-argument
 
 
 ns = Collection()
+ns.add_task(setup)
 ns.add_task(fulltest)
 ns.add_task(full)
 ns.add_task(lint)
